@@ -11,24 +11,41 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.GET("/image", func(c *gin.Context) {
-
-		file, err := os.Create("img.png")
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-		resp, err := http.Get(c.Query("img"))
-		if err != nil {
-			panic(err)
-		}
-		io.Copy(file, resp.Body)
-		size, err := strconv.ParseInt(c.Query("size"), 10, 0)
-		img, err := imaging.Open("./" + file.Name())
-		dstimg := imaging.Resize(img, int(size), 0, imaging.Box)
-		imaging.Save(dstimg, "img.resized.png")
-		c.File("./img.resized.png")
-	})
-
+	r.GET("/image", handleResize)
 	r.Run(":8080")
+}
+
+func handleResize(c *gin.Context) {
+	size, err := strconv.ParseInt(c.Query("size"), 10, 0)
+
+	resp, err := http.Get(c.Query("img"))
+	if err != nil {
+		panic(err)
+	}
+
+	imgName := createImageFromResponse(resp)
+	resizedImg := resizeImage(imgName, int(size))
+	c.File(resizedImg)
+}
+
+func createImageFromResponse(data *http.Response) string {
+	filename := "img"
+	file, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	io.Copy(file, data.Body)
+	return filename
+}
+
+func resizeImage(filename string, size int) string {
+	resizedFile := filename + ".resized.png"
+	img, err := imaging.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	dstimg := imaging.Resize(img, size, 0, imaging.Box)
+	imaging.Save(dstimg, resizedFile)
+	return resizedFile
 }
