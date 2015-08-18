@@ -2,7 +2,7 @@
 
 Just a mess around go app to test out godeps and gin
 
-Resize and image on the internet
+Resize an image on the internet
 
     go run main.go
 
