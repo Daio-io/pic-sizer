@@ -8,4 +8,4 @@ Resize an image on the internet
 
 example:
 
-    http://localhost:8080/image?img=http://some_img_link.png&size=1000
+    https://pic-sizer.herokuapp.com/image?img=http://some_img_link.png&size=1000
