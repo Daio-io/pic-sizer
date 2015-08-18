@@ -10,9 +10,13 @@ import (
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	r := gin.Default()
 	r.GET("/image", handleResize)
-	r.Run(":8080")
+	r.Run(":" + port)
 }
 
 func handleResize(c *gin.Context) {
